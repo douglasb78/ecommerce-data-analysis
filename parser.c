@@ -2,7 +2,7 @@
 #include <ctype.h> // isdigit()
 #include <stdlib.h> // malloc()
 #include <string.h> // memset()
-#include "btree.h"
+#include "parser.h"
 
 void print_data(LineData *data){
 	printf("\"%s\" | \"%s\" | \"%lu\" | \"%llu\" | \"%s\" |  \"%s\" | \"%llu\" | \"%lu\" |  \"%s\" \n",
@@ -113,3 +113,4 @@ LineData* read_line(char string[]){
 	if(data->user_session[0] == '\0') memcpy(data->user_session, "NOT_SPECIFIED", sizeof(char)*13);
 	return data;
 }
+

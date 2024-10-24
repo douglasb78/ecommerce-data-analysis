@@ -3,11 +3,13 @@
 
 # Dataset
 *.csv
+*.bin
 
 ### IDE ###
 *.layout
 *.depend
 *.dev
+*.win
 bin/
 obj/
 
