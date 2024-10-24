@@ -15,10 +15,12 @@ typedef struct line_data { // (unsigned long long int: 18.446.744.073.709.551.61
 
 typedef struct line_product {
 	unsigned long int product_id;
+	unsigned long long int indice;
 	unsigned long long int category_id;
 	char category_code[64];
 	char brand[64];
 	unsigned long long int price;
+	int removed;
 	char mandatory_newline;
 } LineProduct;
 
@@ -28,6 +30,7 @@ typedef struct line_access {
 	char event_type[32];
 	unsigned long int product_id;
 	char user_session[37];
+	int removed;
 	char mandatory_newline;
 } LineAccess;
 

@@ -3,6 +3,7 @@
 #include <string.h>
 #include "utils.h"
 
+// o timestamp é usado de chave no índice de acessos.
 // (não tem strptime() no time.h do GCC)
 // 2019-11-01 00:15:05 UTC -> 1572578105
 long long int generate_timestamp(char date_string[]){
