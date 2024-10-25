@@ -16,6 +16,11 @@ typedef struct registro_indice_acesso {
 	unsigned long long int indice;
 } RegistroIndiceAcesso;
 
+typedef struct registro_marcas {
+	char brand[64];
+	unsigned long long int count;
+} RegistroMarcas;
+
 RegistroIndiceAcesso* criar_indice_acessos(char filename[], unsigned long long int *linhas_escritas);
 RegistroIndiceProduto* criar_indice_produtos(char filename[], unsigned long long int *linhas_escritas);
 
@@ -31,5 +36,7 @@ void mostrar_indice_produtos_arquivo(char filename[]);
 void mostrar_indice_acessos(RegistroIndiceAcesso *indice, unsigned long long int registros);
 void mostrar_indice_produtos(RegistroIndiceProduto *indice, unsigned long long int registros);
 
-void mostrar_acessos_arquivo_intervalo(char filename[], long long int timestamp_start, long long int timestamp_end);
+void mostrar_acessos_arquivo_intervalo(long long int timestamp_start, long long int timestamp_end);
+
+void mostrar_marcas_mais_compradas();
 #endif

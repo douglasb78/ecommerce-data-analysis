@@ -28,7 +28,8 @@ int main(){
 	//salvar_indice_acessos(indice2, registros2, "indice_acessos.bin");
 	//mostrar_indice_produtos_arquivo("indice_produtos.bin");
 	//mostrar_indice_acessos_arquivo("indice_acessos.bin");
-	mostrar_acessos_arquivo_intervalo("indice_acessos.bin", 1569888001, 1569888010);
+	mostrar_acessos_arquivo_intervalo(1569888001, 1569888010);
+	mostrar_marcas_mais_compradas();
 	return 0;
 }
 
