@@ -31,5 +31,5 @@ void mostrar_indice_produtos_arquivo(char filename[]);
 void mostrar_indice_acessos(RegistroIndiceAcesso *indice, unsigned long long int registros);
 void mostrar_indice_produtos(RegistroIndiceProduto *indice, unsigned long long int registros);
 
-RegistroIndiceAcesso* pesquisaBinariaAcesso_arquivo(char filename[], long long int timestamp_target, int *posicao_retornada);
+void mostrar_acessos_arquivo_intervalo(char filename[], long long int timestamp_start, long long int timestamp_end);
 #endif

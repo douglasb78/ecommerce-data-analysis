@@ -355,35 +355,67 @@ RegistroIndiceProduto* criar_indice_produtos(char filename[], unsigned long long
 	Pesquisa binária, para fazer consultas:
    ======================================================= */
 
-RegistroIndiceAcesso* pesquisaBinariaAcesso_arquivo(char filename[], long long int timestamp_target, int *posicao_retornada){
+void mostrar_acessos_arquivo_intervalo(char filename[], long long int timestamp_start, long long int timestamp_end){
 	unsigned long long int low = 0, mid = 0, high = 0;
+	// abrir arquivo de índice
 	FILE *file_indice_access = fopen("indice_acessos.bin", "rb");
-	RegistroIndiceAcesso *registro_acesso_aux = (RegistroIndiceAcesso*)malloc(sizeof(struct registro_indice_acesso));
 	if(file_indice_access == NULL){
 		printf("Erro ao ler o índice binário de acessos.\nCertifique-se dele ter sido criado!");
-		return NULL;
+		return;
 	}
+	// abrir o arquivo normal:
+	FILE *file_access = fopen("arquivo_acessos.bin", "rb");
+	if(file_access == NULL){
+		printf("Erro ao ler o arquivo binário de acessos.\nCertifique-se dele ter sido criado!");
+		return;
+	}
+	
+	RegistroIndiceAcesso *registro_acesso_aux = (RegistroIndiceAcesso*)malloc(sizeof(struct registro_indice_acesso));
+	LineAccess *linha_acesso_aux = (LineAccess*)malloc(sizeof(struct line_access));
+	
+	
 	fseek(file_indice_access, 0, SEEK_END);
 	high = (ftell(file_indice_access) - - sizeof(struct header_indice)) / sizeof(struct registro_indice_acesso);
 	
-	//printf("(%llu - %llu - %llu)\n", low, mid, high);
-	while(timestamp_target != registro_acesso_aux->event_timestamp){		
+	while(timestamp_start != registro_acesso_aux->event_timestamp){		
 		mid = low+(high-low)/2;
-		
 		fseek(file_indice_access, sizeof(struct header_indice) + mid*sizeof(struct registro_indice_acesso), SEEK_SET);
 		fread(registro_acesso_aux, 1, sizeof(struct registro_indice_acesso), file_indice_access);
-		printf("teste: %lld - %llu (%llu - %llu - %llu)\n", timestamp_target, registro_acesso_aux->event_timestamp, low, mid, high);
-		if(timestamp_target > registro_acesso_aux->event_timestamp){
+		//printf("teste: %lld - %llu (%llu - %llu - %llu)\n", timestamp_start, registro_acesso_aux->event_timestamp, low, mid, high);
+		if(low == mid && registro_acesso_aux->event_timestamp != timestamp_start){
+			printf("Não encontrou.");
+			return;
+		}
+		if(timestamp_start > registro_acesso_aux->event_timestamp){
 			low = mid;
 		} else {
 			high = mid;
 		}
 	}
-	*posicao_retornada = mid;
-	fseek(file_indice_access, sizeof(struct header_indice) + *posicao_retornada * sizeof(struct registro_indice_acesso), SEEK_SET);
-	fread(registro_acesso_aux, 1, sizeof(struct registro_indice_acesso), file_indice_access);
+	while(registro_acesso_aux->event_timestamp <= timestamp_end){
+		fseek(file_indice_access, sizeof(struct header_indice) + mid * sizeof(struct registro_indice_acesso), SEEK_SET);
+		fread(registro_acesso_aux, 1, sizeof(struct registro_indice_acesso), file_indice_access);
+		if(registro_acesso_aux->event_timestamp > timestamp_end) break;
+		printf("[Índice] timestamp: %lld - índice: %llu\n", registro_acesso_aux->event_timestamp, registro_acesso_aux->indice);
+		fseek(file_access, sizeof(struct line_access) * registro_acesso_aux->indice, SEEK_SET);
+		fread(linha_acesso_aux, sizeof(struct line_access), 1, file_access);
+		printf("[Arquivo acesso]\n");
+		printf("\ttimestamp: %lld\n\tindice: %llu\n\tuser_id: %lu\n\tevent_type: %s\n\tproduct_id: %lu\n\tuser_session: %s\n\tremoved: %d\n",
+			linha_acesso_aux->event_timestamp,
+			linha_acesso_aux->indice,
+			linha_acesso_aux->user_id,
+			linha_acesso_aux->event_type,
+			linha_acesso_aux->product_id,
+			linha_acesso_aux->user_session,
+			linha_acesso_aux->removed
+		);
+		printf("\n");
+		mid++;
+	}
 	
-	return registro_acesso_aux;
+	fclose(file_access);
+	fclose(file_indice_access);
+	return;
 }
 
 

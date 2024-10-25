@@ -13,7 +13,6 @@ int main(){
 	setlocale(LC_ALL, "Portuguese");
 	unsigned long long int registros = 0;
 	unsigned long long int registros2 = 0;
-	unsigned long long int pos = 0;	
 	
 	//registros += write_data_to_binary_files("2019-Nov-small.csv", -1);
 	//registros += write_data_to_binary_files("2019-Oct-small.csv", -1);
@@ -29,8 +28,7 @@ int main(){
 	//salvar_indice_acessos(indice2, registros2, "indice_acessos.bin");
 	//mostrar_indice_produtos_arquivo("indice_produtos.bin");
 	//mostrar_indice_acessos_arquivo("indice_acessos.bin");
-	RegistroIndiceAcesso *teste = pesquisaBinariaAcesso_arquivo("indice_acessos.bin", 1569888001, &pos);
-	printf("teste final: %llu %llu\n", teste->event_timestamp, teste->indice);
+	mostrar_acessos_arquivo_intervalo("indice_acessos.bin", 1569888001, 1569888010);
 	return 0;
 }
 
