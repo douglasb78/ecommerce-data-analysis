@@ -15,6 +15,8 @@ int main(){
 	char entrada[3];
 	char nome_arquivo[128];
 	char data_inicio[32], data_final[32];
+	char event_timestamp_str_aux[128], user_id_str_aux[128];
+	long long int event_timestamp_aux = 0; unsigned long int user_id_aux = 0;
 	long long int timestamp_inicio = 0, timestamp_fim = 0;
 	int entrada_numero = -1;
 	unsigned long long int registros = 0;
@@ -26,16 +28,18 @@ int main(){
 	do {
         clear();
         printf("Menu de opções:\n\n");
-        printf("1. Ler arquivo .csv\n");
-        printf("2. Criar índice de acessos e produtos, e salvá-los em arquivos\n");
-        printf("3. Carregar índice de acessos e produtos do arquivo para memória\n");
-        printf("4. Mostrar índice de produtos\n");
-        printf("5. Mostrar índice de acessos\n");
-        printf("6. Mostrar acessos em um dado intervalo de tempo\n");
-        printf("7. Mostrar marcas mais vendidas\n");
-        printf("8. Remover evento de acesso do arquivo binário\n");
-        printf("9. Remover produto do arquivo binário (e seus acessos)\n");
-        printf("X. Sair\n\n");
+        printf(" 1. Ler arquivo .csv\n");
+        printf(" 2. Criar índice de acessos e produtos, e salvá-los em arquivos\n");
+        printf(" 3. Carregar índice de acessos e produtos do arquivo para memória\n");
+        printf(" 4. Mostrar índice de produtos\n");
+        printf(" 5. Mostrar índice de acessos\n");
+        printf(" 6. Mostrar acessos em um dado intervalo de tempo\n");
+        printf(" 7. Mostrar marcas mais vendidas\n");
+        printf(" 8. Remover evento de acesso do arquivo binário [em progresso]\n");
+        printf(" 9. Remover produto do arquivo binário (e seus acessos)  [em progresso]\n");
+        printf("10. Reconstruir arquivos binários  [em progresso]\n");
+        printf("11. Testar arquivos binário de produtos\n");
+        printf("\nX. Sair\n\n");
         printf("Escolha uma opção: ");
 
         scanf("%2s%*c", entrada);
@@ -94,14 +98,14 @@ int main(){
 				memset(data_final, '\0', sizeof(char) * 32);
 				timestamp_inicio = 0;
 				timestamp_fim = 0;
-				printf("(Ainda não coloquei checagem de erros, digitar corretamente.)\n")
+				printf("(Ainda não coloquei checagem de erros. Digitar corretamente.)\n");
 				printf("Digite a data inicial: (Exemplo: \"2019-11-01 00:15:05 UTC\")\n> ");
 				if(fgets(data_inicio, 32, stdin)){
 					data_inicio[strcspn(data_inicio, "\n")] = 0;
 				}
 				timestamp_inicio = generate_timestamp(data_inicio);
 				clear();
-				printf("(Ainda não coloquei checagem de erros, digitar corretamente.)\n")
+				printf("(Ainda não coloquei checagem de erros. Digitar corretamente.)\n");
 				printf("Digite a data final: (Exemplo: \"2019-11-01 00:15:15 UTC\")\n> ");
 				if(fgets(data_final, 32, stdin)){
 					data_final[strcspn(data_final, "\n")] = 0;
@@ -116,9 +120,35 @@ int main(){
 				break;
 			case 8:
 				// remover linha de acesso do arquivo binário
+				
+				// perguntar timestamp e id
+				
+				/*
+				printf("(Ainda não coloquei checagem de erros. Digitar corretamente.)\n")
+				printf("Digite o timestamp do acesso a ser removido:\n> ");
+				if(fgets(event_timestamp_str_aux, 128, stdin)){
+					event_timestamp_str_aux[strcspn(event_timestamp_str_aux, "\n")] = 0;
+				}
+				clear();
+				printf("Digite o id de usuário do acesso a ser removido:\n> ");
+				if(fgets(user_id_str_aux, 128, stdin)){
+					user_id_str_aux[strcspn(user_id_str_aux, "\n")] = 0;
+				}
+				
+				*/
+				//FILE *arquivo_acesso = fopen("arquivo_acessos.bin", "rb");
+				//fseek(arquivo_acesso, 0, SEEK_SET);
+				printf("Não implementado.\n");
 				break;
 			case 9:
+				printf("Não implementado.\n");
 				// remover linha de produto do arquivo binário .. e todas linhas de acesso que têm o id dele
+				break;
+			case 10:
+				printf("Não implementado.\n");
+				break;
+			case 11:
+				testar_linhas_produto();
 				break;
 			default:
 				if(entrada[0] == 'X' || entrada[0] == 'x'){

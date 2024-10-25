@@ -38,7 +38,7 @@ typedef struct line_access {
 LineData* read_line(char string[]);
 
 void print_data(LineData *data);
-void testar_linhas_produto(char filename[]);
-int write_data_to_binary_files(char filename[], int count);
+void testar_linhas_produto();
+unsigned long long int write_data_to_binary_files(char filename[], int count);
 #endif
 

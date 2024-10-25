@@ -32,6 +32,12 @@ void print_data(LineData *data){
 // powershell Get-Content 2019-Nov.csv -Head 5000 | Set-Content 2019-Nov-small.csv
 // powershell Get-Content 2019-Oct.csv -Head 5000 | Set-Content 2019-Oct-small.csv
 
+// converter carriage return
+// $FilePath = "C:\Test\File.txt"
+// (Get-Content -Raw -Path $FilePath) -replace '\n','\r\n' | Set-Content -Path $FilePath
+// (Get-Content -Raw -Path $FilePath) -replace '\r\n','\n' | Set-Content -Path $FilePath
+
+
 // event_time,event_type,product_id,category_id,category_code,brand,price,user_id,user_session
 // 2019-11-01 00:00:00 UTC,view,1003461,2053013555631882655,electronics.smartphone,xiaomi,489.07,520088904,4d3b30da-a5e4-49df-b1a8-ba5943f1dd33
 // 2019-11-01 00:00:03 UTC,view,2701517,2053013563911439225,appliances.kitchen.refrigerators,,155.11,518427361,c89b0d96-247f-4044-9c91-bb5f38c6af9b
@@ -127,7 +133,7 @@ LineData* read_line(char string[]){
 	return data;
 }
 
-int write_data_to_binary_files(char filename[], int count){
+unsigned long long int write_data_to_binary_files(char filename[], int count){
 	int aux = 0;
 	unsigned long long int indice = 0;
 	char char_aux = '\0';
@@ -215,7 +221,7 @@ int write_data_to_binary_files(char filename[], int count){
 	return indice;
 }
 
-void testar_linhas_produto(char filename[]){
+void testar_linhas_produto(){
 	FILE *file_products = fopen("arquivo_produtos.bin", "rb");
 	LineProduct *line = (LineProduct*)malloc(sizeof(struct line_product));
 	while(fread(line, (long)sizeof(struct line_product), 1, file_products)){
