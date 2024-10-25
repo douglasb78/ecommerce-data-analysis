@@ -85,7 +85,7 @@ LineData* read_line(char string[]){
 					}
 					break;
 				case 8: // user_session, char[37]
-					data->user_session[char_count] = charAux;
+					if(char_count<36) data->user_session[char_count] = charAux;
 					break;
 				default:
 					break;

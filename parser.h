@@ -26,6 +26,7 @@ typedef struct line_product {
 
 typedef struct line_access {
 	long long int event_timestamp;
+	unsigned long long int indice;
 	unsigned long int user_id;
 	char event_type[32];
 	unsigned long int product_id;

@@ -5,6 +5,7 @@
 #include <conio.h> // getch()
 #include "parser.h"
 #include "utils.h"
+#include "index.h"
 
 #define pause() getch()
 
@@ -27,7 +28,7 @@ int write_data_to_binary_files(char filename[]){
 	FILE *file_data = fopen(filename, "r");
 	if(file_data == NULL){
 		printf("Erro ao ler o conjunto de dados. Coloque-o na mesma pasta do programa!\n");
-		return;
+		return -1;
 	}
 	// Arquivo de produtos:
 	FILE *file_products = fopen("arquivo_produtos.bin", "r+b");
@@ -36,7 +37,7 @@ int write_data_to_binary_files(char filename[]){
 		file_products = fopen("arquivo_produtos.bin", "wb");
 		if(file_products == NULL){
 			printf("Erro ao criar o arquivo binário de produtos.\nDelete o arquivo (se ele já existe) e coloque o programa em uma pasta que não seja a \"Downloads\"! (UAC)\n");
-			return;
+			return -1;
 		}
 	} else {
 		LineProduct *line_product_aux = (LineProduct*)malloc(sizeof(struct line_product));
@@ -58,10 +59,9 @@ int write_data_to_binary_files(char filename[]){
 		printf("Acrescentando ao arquivo binário de acessos...\n");
 		if(file_access == NULL){
 			printf("Erro ao criar o arquivo binário de acessos.\nDelete o arquivo (se ele já existe) e coloque o programa em uma pasta que não seja a \"Downloads\"! (UAC)\n");
-			return;
+			return -1;
 		}
 	}
-	
 	// Construir arquivos binários, não ordenados:
 	while((char_aux = fgetc(file_data)) != EOF){
 		string_aux[aux] = char_aux;
@@ -90,6 +90,7 @@ int write_data_to_binary_files(char filename[]){
 			line_access->product_id = line_data->product_id;
 			memcpy(line_access->user_session, line_data->user_session, sizeof(line_data->user_session));
 			line_access->removed = 0;
+			line_access->indice = indice; 
 			line_access->mandatory_newline = '\n';
 			
 			fwrite(line_product, sizeof(struct line_product), 1, file_products);
@@ -106,10 +107,15 @@ int write_data_to_binary_files(char filename[]){
 }
 
 int main(){
-	unsigned long long int linhas_escritas;
 	setlocale(LC_ALL, "Portuguese");
-	write_data_to_binary_files("2019-Nov-red.csv");
-	linhas_escritas = testar_linhas_produto("arquivo_produtos.bin");
+	unsigned long long int linhas_escritas = 0;
+	//linhas_escritas = write_data_to_binary_files("2019-Nov-red.csv");
+	//printf("%llu registros.", linhas_escritas);
+	//linhas_escritas = write_data_to_binary_files("2019-Nov.csv"); // 67501979
+	//linhas_escritas = write_data_to_binary_files("2019-Oct.csv"); // 42448765
+	//printf("%llu registros.", linhas_escritas);
+	//testar_linhas_produto("arquivo_produtos.bin");
+	criar_indice_produtos("arquivo_produtos.bin");
 	return 0;
 }
 
