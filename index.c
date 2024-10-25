@@ -198,14 +198,6 @@ void insercao_ordenada_acessos(RegistroIndiceAcesso *indice, long long int times
 				indice[i].indice = indice_registro;
 				indice[i].event_timestamp = timestamp_registro;
 			} else { // inserção no meio:
-				//printf("d\n");
-				//pegar o último elemento:
-				//for(j=1; j<registros; j++)
-				//	if(indice[j].indice == -1) break;
-				//j--;
-				//ia fazer com memcpy, mas estava dando erros, vou só fazer do jeito mais simples para terminar:
-				// deslocar:
-				//printf("%lu - %llu\n", indice_registro, productid_registro);
 				j = i;
 				for(j=registros; j>i; j--){
 					if(indice[j-1].event_timestamp == -1) continue;
@@ -473,59 +465,68 @@ void mostrar_acessos_arquivo_intervalo(long long int timestamp_start, long long 
 /* =======================================================
 	Mostrar marcas mais compradas:
    ======================================================= */
-
-
-void insercao_ordenada_marca(RegistroMarcas *brands, char brand_name[64], unsigned long long int registros){
+void insercao_ordenada_marcas(RegistroMarcas *brands, char brand_name[64], unsigned long long int registros){
 	// se é o primeiro elemento:
 	if(brands[0].brand[0] == '\0'){
 		//printf("a\n");
-		memcpy(brands[0].brand, brand_name, sizeof(brand_name));
+		strcpy(brands[0].brand, brand_name);
+		brands[0].count = 1;
 		return;
 	} else {
-		// se é antes do primeiro da lista: // productid_registro < indice[0].product_id
+		// se é antes do primeiro da lista:
 		if(strcmp(brand_name, brands[0].brand) < 0){
 			//printf("b\n");
-			//printf("%s < %s\n", brand_name, brands[0].brand);
-			memcpy(brands+sizeof(struct registro_marcas), brands, (registros-1) * sizeof(struct registro_marcas));
-			memcpy(brands[0].brand, brand_name, sizeof(brand_name));
+			memcpy(brands + sizeof(struct registro_marcas), brands, sizeof(struct registro_marcas) * (registros-1));
+			strcpy(brands[0].brand, brand_name);
+			brands[0].count = 1;
 			return;
 		}  else { // se é depois do primeiro, no meio ou no fim:
-			//printf("%s > %s\n", brand_name, brands[0].brand);
 			int flag = 1;
 			unsigned long long int i=1, j=0;
 			// loop até achar um valor maior .. ou posição vazia no final:
 			while(i < registros){
-				if(strcmp(brand_name, brands[i].brand) == 0) {
+				if(strcmp(brand_name, brands[i].brand) == 0){
 					break;
-				} else if(strcmp(brand_name, brands[i].brand) < 0){
-					//printf("%s < %s\n", brand_name, brands[i].brand);
+				}
+				if(strcmp(brand_name, brands[i].brand) < 0){
 					flag = 0;
 					break;
-				} else {
-					//printf("%s > %s\n", brand_name, brands[i].brand);
 				}
 				if(brands[i].brand[0] == '\0') break;
 				i++;
 			}
-			if(strcmp(brand_name, brands[i].brand) == 0) {
+			if(strcmp(brand_name, brands[i].brand) == 0){
 				brands[i].count += 1;
 				return;
-			} 
+			}
 			if(flag){ // inserção no fim
-				memcpy(brands[i].brand, brand_name, sizeof(brand_name));
+				//printf("c\n");
+				strcpy(brands[i].brand, brand_name);
+				brands[i].count = 1;
 			} else { // inserção no meio:
 				j = i;
 				for(j=registros; j>i; j--){
 					if(brands[j-1].brand[0] == '\0') continue;
-					memcpy(brands + sizeof(struct registro_marcas) * (j),brands + sizeof(struct registro_marcas) * (j-1), sizeof(struct registro_marcas));
+					strcpy(brands[j].brand, brands[j-1].brand);
+					brands[j].count = brands[j-1].count;
 				}
-				memcpy(brands[i].brand, brand_name, sizeof(brand_name));
+				strcpy(brands[i].brand, brand_name);
+				brands[i].count = 1;
+				//printf("salvou d\n");
 			}
 		}
 	}
 }
 
+int comparar_count(const void *a, const void *b) {
+	RegistroMarcas *marca_a = (RegistroMarcas *)a;
+    RegistroMarcas *marca_b = (RegistroMarcas *)b;
 
+    // Comparação reversa para obter ordem decrescente
+    if (marca_a->count > marca_b->count) return -1;
+    else if (marca_a->count < marca_b->count) return 1;
+    else return 0;
+}
 
 void mostrar_marcas_mais_compradas(){
 	// abrir o arquivo principal.
@@ -548,8 +549,8 @@ void mostrar_marcas_mais_compradas(){
 	registros = header->registros;
 	free(header);
 	// criar um vetor de structs para guardar as marcas.. o máximo que pode ter é o número de entradas.
-	RegistroMarcas *brands = (RegistroMarcas*)malloc(sizeof(struct registro_marcas) * registros * 15);
-	for(unsigned long long int i=0; i<registros*15; i++){
+	RegistroMarcas *brands = (RegistroMarcas*)malloc(sizeof(struct registro_marcas) * registros * 3);
+	for(unsigned long long int i=0; i<registros*3; i++){
 		memset(brands[i].brand, '\0', sizeof(char) * 64);
 		brands[i].count = 0;
 	}
@@ -557,16 +558,16 @@ void mostrar_marcas_mais_compradas(){
 	while(fread(line_access, (long)sizeof(struct line_access), 1, file_access)){
 		line_product = encontrar_produto_arquivo("indice_produtos.bin", line_access->product_id);
 		if(line_product != NULL && line_product->brand[0] != '\0'){
-			printf("%s\n", line_product->brand);
-			if(strcmp(line_product->brand, "NOT_SPECIFIED") != 0){
-				insercao_ordenada_marca(brands, line_product->brand, registros);
-			}
+			//printf("%s\n", line_product->brand);
+			insercao_ordenada_marcas(brands, line_product->brand, registros);
 		}
 	}
+	qsort(brands, registros*3, sizeof(struct registro_marcas), comparar_count);
 	
 	//mostrar as marcas mais compradas:
-	for(unsigned long long int i=0; i<registros*15; i++){
-		printf("%s - %llu\n", brands[i].brand, brands[i].count);
+	for(unsigned long long int i=0; i<registros*3; i++){
+		if(brands[i].brand[0] != '\0' && strcmp(brands[i].brand, "NOT_SPECIFIED") != 0)
+			printf("%s - %llu\n", brands[i].brand, brands[i].count);
 	}
 	
 	return;
