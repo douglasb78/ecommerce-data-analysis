@@ -17,7 +17,7 @@ int main(){
 	//registros += write_data_to_binary_files("2019-Nov-small.csv", -1);
 	//registros += write_data_to_binary_files("2019-Oct-small.csv", -1);
 	
-	printf("%llu registros.\n", registros);
+	//printf("%llu registros.\n", registros);
 	
 	//RegistroIndiceProduto *indice = criar_indice_produtos("arquivo_produtos.bin", &registros);
 	//RegistroIndiceAcesso *indice2 = criar_indice_acessos("arquivo_acessos.bin", &registros2);

@@ -352,7 +352,56 @@ RegistroIndiceProduto* criar_indice_produtos(char filename[], unsigned long long
 }
 
 /* =======================================================
-	Pesquisa binária, para fazer consultas:
+	Encontrar um produto com busca binária em índice:
+   ======================================================= */
+
+LineProduct* encontrar_produto_arquivo(char filename[], unsigned long int product_id){
+	unsigned long long int low = 0, mid = 0, high = 0;
+	// abrir arquivo de índice
+	FILE *file_indice_products = fopen("indice_produtos.bin", "rb");
+	if(file_indice_products == NULL){
+		printf("Erro ao ler o índice binário de produtos.\nCertifique-se dele ter sido criado!");
+		return NULL;
+	}
+	// abrir o arquivo normal:
+	FILE *file_products = fopen("arquivo_produtos.bin", "rb");
+	if(file_products == NULL){
+		printf("Erro ao ler o arquivo binário de acessos.\nCertifique-se dele ter sido criado!");
+		return NULL;
+	}
+	
+	RegistroIndiceProduto *registro_produto_aux = (RegistroIndiceProduto*)malloc(sizeof(struct registro_indice_produto));
+	LineProduct *linha_produto_aux = (LineProduct*)malloc(sizeof(struct line_product));
+	
+	
+	fseek(file_indice_products, 0, SEEK_END);
+	high = (ftell(file_indice_products) - - sizeof(struct header_indice)) / sizeof(struct registro_indice_produto);
+	
+	while(product_id != registro_produto_aux->product_id){		
+		mid = low+(high-low)/2;
+		fseek(file_indice_products, sizeof(struct header_indice) + mid*sizeof(struct registro_indice_produto), SEEK_SET);
+		fread(registro_produto_aux, 1, sizeof(struct registro_indice_produto), file_indice_products);
+		//printf("teste: %llu - %llu (%llu - %llu - %llu)\n", product_id, registro_produto_aux->product_id, low, mid, high);
+		if(low == mid && registro_produto_aux->product_id != product_id){
+			printf("Não encontrou.");
+			return NULL;
+		}
+		if(product_id > registro_produto_aux->product_id){
+			low = mid;
+		} else {
+			high = mid;
+		}
+	}
+	fseek(file_products, sizeof(struct line_product) * mid, SEEK_SET);
+	fread(linha_produto_aux, sizeof(struct line_product), 1, file_products);
+	
+	fclose(file_products);
+	fclose(file_indice_products);
+	return linha_produto_aux;
+}
+
+/* =======================================================
+	Mostrar acessos a produtos em um intervalo de tempo:
    ======================================================= */
 
 void mostrar_acessos_arquivo_intervalo(char filename[], long long int timestamp_start, long long int timestamp_end){
@@ -399,7 +448,7 @@ void mostrar_acessos_arquivo_intervalo(char filename[], long long int timestamp_
 		printf("[Índice] timestamp: %lld - índice: %llu\n", registro_acesso_aux->event_timestamp, registro_acesso_aux->indice);
 		fseek(file_access, sizeof(struct line_access) * registro_acesso_aux->indice, SEEK_SET);
 		fread(linha_acesso_aux, sizeof(struct line_access), 1, file_access);
-		printf("[Arquivo acesso]\n");
+		printf("[Arquivo binário de acessos]\n");
 		printf("\ttimestamp: %lld\n\tindice: %llu\n\tuser_id: %lu\n\tevent_type: %s\n\tproduct_id: %lu\n\tuser_session: %s\n\tremoved: %d\n",
 			linha_acesso_aux->event_timestamp,
 			linha_acesso_aux->indice,
@@ -409,6 +458,19 @@ void mostrar_acessos_arquivo_intervalo(char filename[], long long int timestamp_
 			linha_acesso_aux->user_session,
 			linha_acesso_aux->removed
 		);
+		printf("\t[Arquivo binário de produtos]");
+		LineProduct *linha_produto = encontrar_produto_arquivo("indice_produtos.bin", linha_acesso_aux->product_id);
+		if(linha_produto != NULL){
+			printf("\n\t\tproduct_id: %llu\n\t\tindice: %llu\n\t\tcategory_id: %llu\n\t\tcategory_code: %s\n\t\tbrand: %s\n\t\tprice: %Lf\n\t\tremoved: %d\n",
+				linha_produto->product_id,
+				linha_produto->indice,
+				linha_produto->category_id,
+				linha_produto->category_code,
+				linha_produto->brand,
+				((double)linha_produto->price)/100.0,
+				linha_produto->removed
+			);
+		}
 		printf("\n");
 		mid++;
 	}

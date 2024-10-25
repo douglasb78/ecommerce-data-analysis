@@ -16,8 +16,8 @@ void print_data(LineData *data){
 // Oct 42448765 // total: 109950744
 
 // criar link simbólico:
-// powershell New-Item -Path 'C:\Users\douglasb\OneDrive\Documents\eCommerce\2019-Nov.csv' -ItemType 'SymbolicLink' -Value "D:\ecommerce-data-analysis\2019-Nov.csv"
-// powershell New-Item -Path 'C:\Users\douglasb\OneDrive\Documents\eCommerce\2019-Oct.csv' -ItemType 'SymbolicLink' -Value "D:\ecommerce-data-analysis\2019-Oct.csv"
+// powershell New-Item -Path 'DESTINO\2019-Nov.csv' -ItemType 'SymbolicLink' -Value "D:\ecommerce-data-analysis\2019-Nov.csv"
+// powershell New-Item -Path 'DESTINO\2019-Oct.csv' -ItemType 'SymbolicLink' -Value "D:\ecommerce-data-analysis\2019-Oct.csv"
 
 // ler poucas linhas por vez:
 // powershell Get-Content ARQUIVO -Head QUANTIDADE_LINHAS
@@ -28,7 +28,7 @@ void print_data(LineData *data){
 // powershell (Get-Content 2019-Nov.csv)[N - 1]
 // 80.000 = 2019-11-01 03:29:46 UTC,view,4700727,2053013560899928785,auto.accessories.videoregister,navitel,51.46,543578026,9eb059dc-3fdc-467f-a723-af6330893212
 
-// criar versões menores do arquivo
+// criar versões menores do arquivo, para fins de teste do programa:
 // powershell Get-Content 2019-Nov.csv -Head 10000 | Set-Content 2019-Nov-small.csv
 // powershell Get-Content 2019-Oct.csv -Head 10000 | Set-Content 2019-Oct-small.csv
 
