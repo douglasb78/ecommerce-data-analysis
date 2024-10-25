@@ -29,7 +29,7 @@ void mostrar_indice_produtos(RegistroIndiceProduto *indice, unsigned long long i
    ======================================================= */
 
 void mostrar_indice_acessos_arquivo(char filename[]){
-	FILE *file_indice_access = fopen(filename, "rb");
+	FILE *file_indice_access = fopen("indice_acessos.bin", "rb");
 	if(file_indice_access == NULL){
 		printf("Erro ao ler o índice binário de acessos.\nCertifique-se dele ter sido criado!");
 		return;
@@ -50,7 +50,7 @@ void mostrar_indice_acessos_arquivo(char filename[]){
 }
 
 void mostrar_indice_produtos_arquivo(char filename[]){
-	FILE *file_indice_products = fopen(filename, "rb");
+	FILE *file_indice_products = fopen("indice_produtos.bin", "rb");
 	if(file_indice_products == NULL){
 		printf("Erro ao ler o índice binário de produtos.\nCertifique-se dele ter sido criado!");
 		return;
@@ -75,7 +75,7 @@ void mostrar_indice_produtos_arquivo(char filename[]){
    ======================================================= */
 RegistroIndiceAcesso* carregar_indice_acessos(char filename[], unsigned long long int *registros){
 	unsigned long long int i = 0;
-	FILE *file_indice_access = fopen(filename, "rb");
+	FILE *file_indice_access = fopen("indice_acessos.bin", "rb");
 	if(file_indice_access == NULL){
 		printf("Erro ao ler o índice binário de acessos.\nCertifique-se dele ter sido criado!");
 		return NULL;
@@ -101,7 +101,7 @@ RegistroIndiceAcesso* carregar_indice_acessos(char filename[], unsigned long lon
 
 RegistroIndiceProduto* carregar_indice_produtos(char filename[], unsigned long long int *registros){
 	unsigned long long int i = 0;
-	FILE *file_indice_products = fopen(filename, "rb");
+	FILE *file_indice_products = fopen("indice_produtos.bin", "rb");
 	if(file_indice_products == NULL){
 		printf("Erro ao ler o índice binário de produtos.\nCertifique-se dele ter sido criado!");
 		return NULL;
@@ -129,7 +129,7 @@ RegistroIndiceProduto* carregar_indice_produtos(char filename[], unsigned long l
    ======================================================= */
 
 void salvar_indice_acessos(RegistroIndiceAcesso *indice, unsigned long long int registros, char filename[]){
-	FILE *file_indice_access = fopen(filename, "wb");
+	FILE *file_indice_access = fopen("indice_acessos.bin", "wb");
 	if(file_indice_access == NULL){
 		printf("Erro ao criar o índice binário de acessos.\nDelete o arquivo (se ele já existe) e coloque o programa em uma pasta que não seja a \"Downloads\"! (UAC)\n");
 		return;
@@ -146,7 +146,7 @@ void salvar_indice_acessos(RegistroIndiceAcesso *indice, unsigned long long int 
 }
 
 void salvar_indice_produtos(RegistroIndiceProduto *indice, unsigned long long int registros, char filename[]){
-	FILE *file_indice_products = fopen(filename, "wb");
+	FILE *file_indice_products = fopen("indice_produtos.bin", "wb");
 	if(file_indice_products == NULL){
 		printf("Erro ao criar o índice binário de produtos.\nDelete o arquivo (se ele já existe) e coloque o programa em uma pasta que não seja a \"Downloads\"! (UAC)\n");
 		return;
@@ -264,7 +264,7 @@ void insercao_ordenada_produtos(RegistroIndiceProduto *indice, unsigned long int
 RegistroIndiceAcesso* criar_indice_acessos(char filename[], unsigned long long int *linhas_escritas){
 	int i = 0;
 	unsigned long long int registros = 0;
-	FILE *file_access = fopen(filename, "rb");
+	FILE *file_access = fopen("arquivo_acessos.bin", "rb");
 	if(file_access == NULL){
 		printf("Erro ao ler o arquivo binário de acessos. Certifique-se dele ter sido gerado!\n");
 		return NULL;
@@ -300,7 +300,7 @@ RegistroIndiceAcesso* criar_indice_acessos(char filename[], unsigned long long i
 RegistroIndiceProduto* criar_indice_produtos(char filename[], unsigned long long int *linhas_escritas){
 	int i = 0;
 	unsigned long long int registros = 0;
-	FILE *file_products = fopen(filename, "rb");
+	FILE *file_products = fopen("arquivo_produtos.bin", "rb");
 	if(file_products == NULL){
 		printf("Erro ao ler o arquivo binário de produtos. Certifique-se dele ter sido gerado!\n");
 		return NULL;
@@ -342,13 +342,13 @@ LineProduct* encontrar_produto_arquivo(char filename[], unsigned long int produc
 	// abrir arquivo de índice
 	FILE *file_indice_products = fopen("indice_produtos.bin", "rb");
 	if(file_indice_products == NULL){
-		printf("Erro ao ler o índice binário de produtos.\nCertifique-se dele ter sido criado!");
+		//printf("Erro ao ler o índice binário de produtos. \"encontrar_produto_arquivo()\"\nCertifique-se dele ter sido criado!");
 		return NULL;
 	}
 	// abrir o arquivo normal:
 	FILE *file_products = fopen("arquivo_produtos.bin", "rb");
 	if(file_products == NULL){
-		printf("Erro ao ler o arquivo binário de acessos.\nCertifique-se dele ter sido criado!");
+		//printf("Erro ao ler o arquivo binário de produtos. \"encontrar_produto_arquivo()\"\nCertifique-se dele ter sido criado!");
 		return NULL;
 	}
 	
@@ -391,13 +391,13 @@ void mostrar_acessos_arquivo_intervalo(long long int timestamp_start, long long 
 	// abrir arquivo de índice
 	FILE *file_indice_access = fopen("indice_acessos.bin", "rb");
 	if(file_indice_access == NULL){
-		printf("Erro ao ler o índice binário de acessos.\nCertifique-se dele ter sido criado!");
+		printf("Erro ao ler o índice binário de acessos. \"mostrar_acessos_arquivo_intervalo()\"\nCertifique-se dele ter sido criado!");
 		return;
 	}
 	// abrir o arquivo normal:
 	FILE *file_access = fopen("arquivo_acessos.bin", "rb");
 	if(file_access == NULL){
-		printf("Erro ao ler o arquivo binário de acessos.\nCertifique-se dele ter sido criado!");
+		printf("Erro ao ler o arquivo binário de acessos. \"mostrar_acessos_arquivo_intervalo()\"\nCertifique-se dele ter sido criado!");
 		return;
 	}
 	
@@ -532,14 +532,14 @@ void mostrar_marcas_mais_compradas(){
 	// abrir o arquivo principal.
 	FILE *file_access = fopen("arquivo_acessos.bin", "rb");
 	if(file_access == NULL){
-		printf("Erro ao ler o arquivo binário de acessos.\nCertifique-se dele ter sido criado!");
+		printf("Erro ao ler o arquivo binário de acessos. \"mostrar_marcas_mais_compradas()\" \nCertifique-se dele ter sido criado!\n");
 		return;
 	}
 	// pegar o número de registros:
 	unsigned long long int registros = 0;
 	FILE *file_indice_access = fopen("indice_acessos.bin", "rb");
 	if(file_indice_access == NULL){
-		printf("Erro ao ler o índice binário de acessos.\nCertifique-se dele ter sido criado!");
+		printf("Erro ao ler o índice binário de acessos. \"mostrar_marcas_mais_compradas()\" \nCertifique-se dele ter sido criado!\n");
 		return;
 	}
 	LineProduct *line_product = NULL;

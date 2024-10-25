@@ -29,8 +29,8 @@ void print_data(LineData *data){
 // 80.000 = 2019-11-01 03:29:46 UTC,view,4700727,2053013560899928785,auto.accessories.videoregister,navitel,51.46,543578026,9eb059dc-3fdc-467f-a723-af6330893212
 
 // criar versões menores do arquivo, para fins de teste do programa:
-// powershell Get-Content 2019-Nov.csv -Head 10000 | Set-Content 2019-Nov-small.csv
-// powershell Get-Content 2019-Oct.csv -Head 10000 | Set-Content 2019-Oct-small.csv
+// powershell Get-Content 2019-Nov.csv -Head 5000 | Set-Content 2019-Nov-small.csv
+// powershell Get-Content 2019-Oct.csv -Head 5000 | Set-Content 2019-Oct-small.csv
 
 // event_time,event_type,product_id,category_id,category_code,brand,price,user_id,user_session
 // 2019-11-01 00:00:00 UTC,view,1003461,2053013555631882655,electronics.smartphone,xiaomi,489.07,520088904,4d3b30da-a5e4-49df-b1a8-ba5943f1dd33
