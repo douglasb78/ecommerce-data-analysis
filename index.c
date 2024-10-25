@@ -79,12 +79,14 @@ void salvar_indice_produtos(RegistroIndiceProduto *indice, unsigned long long in
 void insercao_ordenada_produtos(RegistroIndiceProduto *indice, unsigned long int productid_registro, unsigned long long int indice_registro, unsigned long long int registros){
 	// se é o primeiro elemento:
 	if(indice[0].indice == -1){
+		//printf("a\n");
 		indice[0].indice = indice_registro;
 		indice[0].product_id = productid_registro;
 		return;
 	} else {
 		// se é antes do primeiro da lista:
 		if(productid_registro < indice[0].product_id){
+			//printf("b\n");
 			memcpy(indice+sizeof(struct registro_indice_produto), indice, (registros-1) * sizeof(struct registro_indice_produto));
 			indice[0].indice = indice_registro;
 			indice[0].product_id = productid_registro;
@@ -102,15 +104,18 @@ void insercao_ordenada_produtos(RegistroIndiceProduto *indice, unsigned long int
 				i++;
 			}
 			if(flag){ // inserção no fim
+				//printf("c\n");
 				indice[i].indice = indice_registro;
 				indice[i].product_id = productid_registro;
 			} else { // inserção no meio:
+				//printf("d\n");
 				//pegar o último elemento:
 				//for(j=1; j<registros; j++)
 				//	if(indice[j].indice == -1) break;
 				//j--;
 				//ia fazer com memcpy, mas estava dando erros, vou só fazer do jeito mais simples para terminar:
 				// deslocar:
+				//printf("%lu - %llu\n", indice_registro, productid_registro);
 				j = i;
 				for(j=registros; j>i; j--){
 					if(indice[j-1].product_id == -1) continue;
@@ -119,6 +124,7 @@ void insercao_ordenada_produtos(RegistroIndiceProduto *indice, unsigned long int
 				}
 				indice[i].indice = indice_registro;
 				indice[i].product_id = productid_registro;
+				//printf("salvou d\n");
 			}
 		}
 	}
@@ -141,7 +147,7 @@ RegistroIndiceProduto* criar_indice_produtos(char filename[], unsigned long long
 	printf("Há %llu registros no arquivo binário de produtos.\n", registros);
 	
 	// Criar índice:
-	RegistroIndiceProduto *indice = (RegistroIndiceProduto*)calloc(registros+1, (long)sizeof(struct registro_indice_produto));
+	RegistroIndiceProduto *indice = (RegistroIndiceProduto*)calloc(registros*2+1, (long)sizeof(struct registro_indice_produto));
 	for(unsigned long long int i=0; i<registros; i++){
 		indice[i].indice = -1;
 	}

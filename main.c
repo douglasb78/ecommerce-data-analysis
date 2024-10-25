@@ -109,16 +109,18 @@ int write_data_to_binary_files(char filename[]){
 int main(){
 	setlocale(LC_ALL, "Portuguese");
 	unsigned long long int registros = 0;
-	//linhas_escritas = write_data_to_binary_files("2019-Nov-red.csv");
-	//printf("%llu registros.", linhas_escritas);
-	//linhas_escritas = write_data_to_binary_files("2019-Nov.csv"); // 67501979
-	//linhas_escritas = write_data_to_binary_files("2019-Oct.csv"); // 42448765
+	
+	//registros += write_data_to_binary_files("2019-Nov-red.csv");
+	
+	registros += write_data_to_binary_files("2019-Nov.csv"); // 67501979
+	registros += write_data_to_binary_files("2019-Oct.csv"); // 42448765
+	printf("%llu registros.", registros);
 	//printf("%llu registros.", linhas_escritas);
 	//testar_linhas_produto("arquivo_produtos.bin");
-	//RegistroIndiceProduto *indice = criar_indice_produtos("arquivo_produtos.bin", &registros);
-	RegistroIndiceProduto *indice = carregar_indice_produtos("indice_produtos.bin", &registros);
-	mostrar_indice_produtos(indice, registros);
-	//salvar_indice_produtos(indice, registros, "indice_produtos.bin");
+	RegistroIndiceProduto *indice = criar_indice_produtos("arquivo_produtos.bin", &registros);
+	//RegistroIndiceProduto *indice = carregar_indice_produtos("indice_produtos.bin", &registros);
+	//mostrar_indice_produtos(indice, registros);
+	salvar_indice_produtos(indice, registros, "indice_produtos.bin");
 	//mostrar_indice_produtos_arquivo("indice_produtos.bin");
 	return 0;
 }

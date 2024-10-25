@@ -19,5 +19,5 @@ typedef struct registro_indice_acesso {
 RegistroIndiceProduto* criar_indice_produtos(char filename[], unsigned long long int *linhas_escritas);
 RegistroIndiceProduto* carregar_indice_produtos(char filename[], unsigned long long int *registros);
 void salvar_indice_produtos(RegistroIndiceProduto *indice, unsigned long long int registros, char filename[]);
-void mostrar_indice_produtos(RegistroIndiceProduto *indice, unsigned long long int registros);
+void mostrar_indice_produtos_arquivo(char filename[]);
 #endif
