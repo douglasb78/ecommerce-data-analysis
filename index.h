@@ -16,8 +16,20 @@ typedef struct registro_indice_acesso {
 	unsigned long long int indice;
 } RegistroIndiceAcesso;
 
+RegistroIndiceAcesso* criar_indice_acessos(char filename[], unsigned long long int *linhas_escritas);
 RegistroIndiceProduto* criar_indice_produtos(char filename[], unsigned long long int *linhas_escritas);
+
+RegistroIndiceAcesso* carregar_indice_acessos(char filename[], unsigned long long int *registros);
 RegistroIndiceProduto* carregar_indice_produtos(char filename[], unsigned long long int *registros);
+
+void salvar_indice_acessos(RegistroIndiceAcesso *indice, unsigned long long int registros, char filename[]);
 void salvar_indice_produtos(RegistroIndiceProduto *indice, unsigned long long int registros, char filename[]);
+
+void mostrar_indice_acessos_arquivo(char filename[]);
 void mostrar_indice_produtos_arquivo(char filename[]);
+
+void mostrar_indice_acessos(RegistroIndiceAcesso *indice, unsigned long long int registros);
+void mostrar_indice_produtos(RegistroIndiceProduto *indice, unsigned long long int registros);
+
+RegistroIndiceAcesso* pesquisaBinariaAcesso_arquivo(char filename[], long long int timestamp_target, int *posicao_retornada);
 #endif
