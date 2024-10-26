@@ -6,6 +6,42 @@
 // o timestamp é usado de chave no índice de acessos.
 // (não tem strptime() no time.h do GCC)
 // 2019-11-01 00:15:05 UTC -> 1572578105
+int is_date_string_valid(char date_string[]){
+	for(int i=0; i<strlen(date_string); i++){
+		// ano:
+		if(i >= 0 && i <= 3){
+			if(date_string[i] < '0' || date_string[i] > '9') return 0;
+		}
+		if(i==4 && date_string[i] != '-') return 0;
+		// mês
+		if(i >= 5 && i <= 6){
+			if(date_string[i] < '0' || date_string[i] > '9') return 0;
+		}
+		if(i==7 && date_string[i] != '-') return 0;
+		// dia
+		if(i >= 8 && i <= 9){
+			if(date_string[i] < '0' || date_string[i] > '9') return 0;
+		}
+		if(i==10 && date_string[i] != ' ') return 0;
+		// hora:
+		if(i >= 11 && i <= 12){
+			if(date_string[i] < '0' || date_string[i] > '9') return 0;
+		}
+		if(i==13 && date_string[i] != ':') return 0;
+		// minuto:
+		if(i >= 14 && i <= 15){
+			if(date_string[i] < '0' || date_string[i] > '9') return 0;
+		}
+		if(i==16 && date_string[i] != ':') return 0;
+		// segundo:
+		if(i >= 17 && i <= 18){
+			if(date_string[i] < '0' || date_string[i] > '9') return 0;
+		}
+		if(i>18) break;
+	}
+	return 1;
+}
+
 long long int generate_timestamp(char date_string[]){
 	long long int ts = 0;
 	int i=0, count=0; char aux = 'A'; char aux_str[2] = {'\0', '\0'};
