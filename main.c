@@ -57,6 +57,7 @@ int main(){
 				printf("Arquivo: \"%s\"\n", nome_arquivo);
 				pause();
 				registros = write_data_to_binary_files(nome_arquivo, -1);
+				printf("%llu registros.\n", registros);
 				registros_acessos += registros;
 				registros_produtos += registros;
 				break;

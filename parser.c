@@ -29,8 +29,8 @@ void print_data(LineData *data){
 // 80.000 = 2019-11-01 03:29:46 UTC,view,4700727,2053013560899928785,auto.accessories.videoregister,navitel,51.46,543578026,9eb059dc-3fdc-467f-a723-af6330893212
 
 // criar versões menores do arquivo, para fins de teste do programa:
-// powershell Get-Content 2019-Nov.csv -Head 5000 | Set-Content 2019-Nov-small.csv
-// powershell Get-Content 2019-Oct.csv -Head 5000 | Set-Content 2019-Oct-small.csv
+// powershell Get-Content 2019-Nov.csv -Head 100000 | Set-Content 2019-Nov-small.csv
+// powershell Get-Content 2019-Oct.csv -Head 100000 | Set-Content 2019-Oct-small.csv
 
 // converter carriage return
 // $FilePath = "C:\Test\File.txt"
@@ -157,7 +157,7 @@ unsigned long long int write_data_to_binary_files(char filename[], int count){
 		LineProduct *line_product_aux = (LineProduct*)malloc(sizeof(struct line_product));
 		fseek(file_products, (long)sizeof(struct line_product) * -1, SEEK_END);
 		fread(line_product_aux, (long)sizeof(struct line_product), 1, file_products);
-		indice = line_product_aux->indice + 1;
+		indice = line_product_aux->indice + 2;
 		free(line_product_aux);
 		printf("Acrescentando ao arquivo binário de produtos...\n");
 		fseek(file_products, 0, SEEK_END);
