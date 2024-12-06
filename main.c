@@ -1,4 +1,4 @@
-// TODO: terminar as funções tabela hash, pôr pesquisa no índice exaustivo .. e fazer apresentação do trabalho.
+// TODO: pôr remoção no arquivo de dados e fazer a tabela de tempo, pra apresentação do trabalho.
 
 #include <stdio.h>
 #include <locale.h> // acentuação
@@ -54,23 +54,24 @@ int main(){
         printf("Opções:\n");
         printf(" 1. Ler arquivo .csv\n");
         printf(" 2. Criar índices exaustivos de acessos e produtos, e salvá-los em arquivos.\n");
-        printf(" 3. Carregar índice de acessos e produtos do arquivo para memória\n");
-        printf(" 4. Mostrar índice de produtos\n");
-        printf(" 5. Mostrar índice de acessos\n");
-        printf(" 6. Mostrar acessos em um dado intervalo de tempo\n");
-        printf(" 7. Mostrar marcas mais vendidas\n");
-        printf(" 8. Testar arquivos binário de produtos\n");
+        printf(" 3. Carregar índice de acessos e produtos do arquivo para memória.\n");
+        printf(" 4. Mostrar índice de produtos.\n");
+        printf(" 5. Mostrar índice de acessos.\n");
+        printf(" 6. Mostrar acessos em um dado intervalo de tempo.\n");
+        printf(" 7. Mostrar marcas mais vendidas.\n");
+        printf(" 8. Testar arquivos binário de produto.s\n");
+        printf(" 9. Remover produto.\n");
         printf("----------------------------------------\n");
         printf("== Trabalho 2 ==\n");
         printf("Opções Árvore B:\n");
-        printf(" 9. Construir índice de produtos na memória, com árvore B.\n");
-        printf("10. Procurar produto pelo índice.\n");
-        printf("11. Remover produto do índice árvore B.\n");
-        printf("12. Criar um produto e adicioná-lo ao arquivo binário de dados da árvore B.\n");
+        printf(" 10. Construir índice de produtos na memória, com árvore B.\n");
+        printf("11. Procurar produto pelo índice.\n");
+        printf("12. Remover produto do índice árvore B.\n");
+        printf("13. Criar um produto e adicioná-lo ao arquivo binário de dados da árvore B.\n");
         printf("\nOpções Tabela Hash:\n");
-        printf("13. Construir tabela hash.\n");
-        printf("14. Pesquisa na tabela hash.\n");
-        printf("15. Remover produto da tabela hash.\n");
+        printf("14. Construir tabela hash.\n");
+        printf("15. Pesquisa na tabela hash.\n");
+        printf("16. Remover produto da tabela hash.\n");
         printf("\nX. Sair\n\n");
         printf("Escolha uma opção: ");
 
@@ -177,10 +178,14 @@ int main(){
 				testar_linhas_produto();
 				break;
 			case 9:
+				printf("Digite o product_id para remover do arquivo de dados:\t(Exemplo: 1004856)\n"); // 1004856
+				scanf("%lu", &product_id_busca);
+				break;
+			case 10:
 				bt_produtos = criar_indice_produtos_arvore_b("arquivo_produtos.bin", &registros_produtos_b);
 				//mostrar_arvore(bt_produtos, 0, NULL);
 				break;
-			case 10:
+			case 11:
 				printf("Digite o product_id para procurar na árvore B:\t(Exemplo: 1004856)\n"); // 1004856
 				scanf("%lu", &product_id_busca);
 				produto_aux = buscarProductArvore(bt_produtos, product_id_busca);
@@ -212,7 +217,7 @@ int main(){
 				produto_aux = NULL;
 				line_product_aux = NULL;
 				break;
-			case 11:
+			case 12:
 				printf("Digite o product_id para remover da árvore B:\t(Exemplo: 1004856)\n"); // 1004856
 				scanf("%lu", &product_id_busca);
 				start_time = get_time();
@@ -224,7 +229,7 @@ int main(){
 					printf("Produto não encontrado no índice!\n");
 				}
 				break;
-			case 12:
+			case 13:
 				// inicializar:
 				line_product_aux = (LineProduct*)malloc(sizeof(struct line_product));
 				line_product_aux2 = (LineProduct*)malloc(sizeof(struct line_product));
@@ -275,7 +280,7 @@ int main(){
 					printf("* %lf segundos para adicionar o produto na Árvore B.\n", end_time-start_time);
 				}
 				break;
-			case 13:
+			case 14:
 				memset(nome_arquivo, '\0', sizeof(char) * 64);
 				printf("Digite o nome do arquivo .csv a ser lido, para criar a tabela hash:\t(Exemplos: 2019-Nov-small.csv, 2019-Nov.csv)\n> ");
 				if(fgets(nome_arquivo, 128, stdin)){
@@ -288,7 +293,7 @@ int main(){
 				printf("* %lf segundos para criar a tabela hash.\n", end_time-start_time);
 				break;
 			// (category_code, brand, price)
-			case 14:
+			case 15:
 				// [Índice] timestamp: 1569888057 - índice: 10068
 				printf("Exemplo: appliances.sewing_machine -- janome -- 29365\n");
 				printf("Exemplo: construction.tools.welding -- magnetta -- 25478\n");
@@ -322,7 +327,7 @@ int main(){
 					printf("* %lf segundos para encontrar o produto pela tabela hash + índice de acessos.\n", end_time-start_time);
 				}
 				break;
-			case 15:
+			case 16:
 				// [Índice] timestamp: 1569888057 - índice: 10068
 				entrada_hash_remover = NULL;
 				printf("Exemplo: appliances.sewing_machine -- janome -- 29365\n");

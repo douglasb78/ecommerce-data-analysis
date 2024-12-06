@@ -288,8 +288,10 @@ RegistroIndiceAcesso* criar_indice_acessos(char filename[], unsigned long long i
 	
 	printf("Realizando inserção ordenada no índice...\n");
 	while(fread(line_access_aux, (long)sizeof(struct line_access), 1, file_access)){
-		insercao_ordenada_acessos(indice, line_access_aux->event_timestamp, line_access_aux->indice, registros);
-		i++;
+		if(line_access->removed == 0){
+			insercao_ordenada_acessos(indice, line_access_aux->event_timestamp, line_access_aux->indice, registros);
+			i++;	
+		}
 	}
 	fclose(file_access);
 	
@@ -325,8 +327,10 @@ RegistroIndiceProduto* criar_indice_produtos(char filename[], unsigned long long
 	
 	printf("Realizando inserção ordenada no índice...\n");
 	while(fread(line_product_aux, (long)sizeof(struct line_product), 1, file_products)){
-		insercao_ordenada_produtos(indice, line_product_aux->product_id, line_product_aux->indice, registros);
-		i++;
+		if(line_product->removed == 0){
+			insercao_ordenada_produtos(indice, line_product_aux->product_id, line_product_aux->indice, registros);
+			i++;
+		}
 	}
 	fclose(file_products);
 	
