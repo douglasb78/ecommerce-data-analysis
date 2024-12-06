@@ -9,6 +9,7 @@
 #include "parser.h" // leitura do arquivo
 #include "index.h" // arquivo de índice
 #include "btree_products.h" // arquivo de árvores B
+#include "hash_table_products.h" // tabela hash de produtos
 #define clear() system("@cls||clear") // limpa tela
 
 #define pause() getch()
@@ -26,6 +27,8 @@ int main(){
 	unsigned long long int registros = 0;
 	unsigned long long int registros_produtos = 0;
 	unsigned long long int registros_acessos = 0;
+	unsigned long long int registros_produtos_b = 0;
+	unsigned long long int registros_acessos_hash = 0;
 	RegistroIndiceProduto *indice_produtos = NULL;
 	RegistroIndiceAcesso *indice_acessos = NULL; 
 	BTree_Prod bt_produtos = NULL;
@@ -37,12 +40,20 @@ int main(){
 	char category_code_aux[64];
 	char brand_aux[64];
 	unsigned long long int price_aux = -1;
+	TabelaHashProdutos *tabela_hash_produtos = malloc(sizeof(struct tabela_hash_produtos));;
+	tabela_hash_produtos->hashes = NULL;
+	tabela_hash_produtos->registros = 0;
+	unsigned int hash_aux = 0;
+	int sucesso = -1;
+	int skip;
+	struct entrada_tabela_produtos *entrada_hash_remover = NULL;
 
 	do {
         clear();
-        printf("Opções:\t(Trabalho 1)\n");
+        printf("== Trabalho 1 ==\n");
+        printf("Opções:\n");
         printf(" 1. Ler arquivo .csv\n");
-        printf(" 2. Criar arquivo binário de dados, e arquivo de índice de acessos e produtos, e salvá-los em arquivos\n");
+        printf(" 2. Criar índices exaustivos de acessos e produtos, e salvá-los em arquivos.\n");
         printf(" 3. Carregar índice de acessos e produtos do arquivo para memória\n");
         printf(" 4. Mostrar índice de produtos\n");
         printf(" 5. Mostrar índice de acessos\n");
@@ -50,14 +61,16 @@ int main(){
         printf(" 7. Mostrar marcas mais vendidas\n");
         printf(" 8. Testar arquivos binário de produtos\n");
         printf("----------------------------------------\n");
+        printf("== Trabalho 2 ==\n");
         printf("Opções Árvore B:\n");
         printf(" 9. Construir índice de produtos na memória, com árvore B.\n");
         printf("10. Procurar produto pelo índice.\n");
         printf("11. Remover produto do índice árvore B.\n");
         printf("12. Criar um produto e adicioná-lo ao arquivo binário de dados da árvore B.\n");
-        printf("----------------------------------------\n");
+        printf("\nOpções Tabela Hash:\n");
         printf("13. Construir tabela hash.\n");
-        printf("Opções Tabela Hash:\n");
+        printf("14. Pesquisa na tabela hash.\n");
+        printf("15. Remover produto da tabela hash.\n");
         printf("\nX. Sair\n\n");
         printf("Escolha uma opção: ");
 
@@ -164,7 +177,7 @@ int main(){
 				testar_linhas_produto();
 				break;
 			case 9:
-				bt_produtos = criar_indice_produtos_arvore_b("arquivo_produtos.bin", &registros_produtos);
+				bt_produtos = criar_indice_produtos_arvore_b("arquivo_produtos.bin", &registros_produtos_b);
 				//mostrar_arvore(bt_produtos, 0, NULL);
 				break;
 			case 10:
@@ -178,7 +191,10 @@ int main(){
 					break;
 				}
 				printf("Informações do produto, no arquivo de dados:\n");
+				start_time = get_time();
 				line_product_aux = encontrar_produto_arquivo("indice_produtos.bin", product_id_busca);
+				end_time = get_time();
+				printf("* %lf segundos para encontrar o produto na Árvore B.\n", end_time-start_time);
 				if(line_product_aux != NULL){
 					printf("\t\tproduct_id: %llu\n\t\tindice: %llu\n\t\tcategory_id: %llu\n\t\tcategory_code: %s\n\t\tbrand: %s\n\t\tprice: %Lf\n\t\tremoved: %d\n",
 						line_product_aux->product_id,
@@ -199,8 +215,11 @@ int main(){
 			case 11:
 				printf("Digite o product_id para remover da árvore B:\t(Exemplo: 1004856)\n"); // 1004856
 				scanf("%lu", &product_id_busca);
+				start_time = get_time();
 				if (removerProductArvore(bt_produtos, product_id_busca)){
 					printf("Produto removido do índice.\n");
+					end_time = get_time();
+					printf("* %lf segundos para remover o produto da Árvore B.\n", end_time-start_time);
 				} else {
 					printf("Produto não encontrado no índice!\n");
 				}
@@ -221,10 +240,10 @@ int main(){
 				scanf("%llu%*c", &category_id_aux);
 				printf("Digite o category_code do produto:\t(Exemplo: electronics.smartphone)\n");
 				if(fgets(category_code_aux, 64, stdin))
-					data_final[strcspn(category_code_aux, "\n")] = 0;
+					category_code_aux[strcspn(category_code_aux, "\n")] = 0;
 				printf("Digite a marca do produto:\t(Exemplo: samsung)\n");
 				if(fgets(brand_aux, 64, stdin))
-					data_final[strcspn(brand_aux, "\n")] = 0;
+					brand_aux[strcspn(brand_aux, "\n")] = 0;
 				printf("Digite o preço do produto em centavos:\t(Exemplo: 48907 para $489.07)\n");
 				scanf("%llu%*c", &price_aux);
 				// criar linha:
@@ -250,11 +269,94 @@ int main(){
 					RegistroIndiceProduto *registro_aux = malloc(sizeof(struct registro_indice_produto));
 					registro_aux->product_id = product_id_busca;
 					registro_aux->indice = line_product_aux->indice;
+					start_time = get_time();
 					btInserir(bt_produtos, registro_aux);
+					end_time = get_time();
+					printf("* %lf segundos para adicionar o produto na Árvore B.\n", end_time-start_time);
 				}
 				break;
 			case 13:
-				
+				memset(nome_arquivo, '\0', sizeof(char) * 64);
+				printf("Digite o nome do arquivo .csv a ser lido, para criar a tabela hash:\t(Exemplos: 2019-Nov-small.csv, 2019-Nov.csv)\n> ");
+				if(fgets(nome_arquivo, 128, stdin)){
+					nome_arquivo[strcspn(nome_arquivo, "\n")] = 0;
+				}
+				printf("Arquivo: \"%s\"\n", nome_arquivo);
+				start_time = get_time();
+				criar_tabela_hash_produtos(nome_arquivo, &registros_acessos_hash, tabela_hash_produtos);
+				end_time = get_time();
+				printf("* %lf segundos para criar a tabela hash.\n", end_time-start_time);
+				break;
+			// (category_code, brand, price)
+			case 14:
+				// [Índice] timestamp: 1569888057 - índice: 10068
+				printf("Exemplo: appliances.sewing_machine -- janome -- 29365\n");
+				printf("Exemplo: construction.tools.welding -- magnetta -- 25478\n");
+				printf("Digite o category_code do produto:\n");
+				if(fgets(category_code_aux, 64, stdin))
+					category_code_aux[strcspn(category_code_aux, "\n")] = 0;
+				printf("Digite a marca do produto:\n");
+				if(fgets(brand_aux, 64, stdin))
+					brand_aux[strcspn(brand_aux, "\n")] = 0;
+				printf("Digite o preço do produto em centavos:\n");
+				scanf("%llu%*c", &price_aux);
+				start_time = get_time();
+				for(int i=0; i<2; i++){
+					timestamp_inicio = -1;
+					sucesso = -1;
+					skip = 0;
+					hash_aux = hash_produto(category_code_aux, brand_aux, price_aux);
+					if(i)
+						printf("* Hash gerado: %llu *\n", hash_aux);
+					while(sucesso != 0){
+						timestamp_inicio = procurar_hash(tabela_hash_produtos, hash_aux, skip, i, &entrada_hash_remover);
+						if(timestamp_inicio == -1) break;
+						sucesso = mostrar_acessos_produtos_intervalo_hash(category_code_aux, brand_aux, price_aux, timestamp_inicio, timestamp_inicio, i);
+						skip += 1;
+					}
+				}
+				if(sucesso == -1 || sucesso == 1){
+					printf("Não encontrado.");
+				} else {
+					end_time = get_time();
+					printf("* %lf segundos para encontrar o produto pela tabela hash + índice de acessos.\n", end_time-start_time);
+				}
+				break;
+			case 15:
+				// [Índice] timestamp: 1569888057 - índice: 10068
+				entrada_hash_remover = NULL;
+				printf("Exemplo: appliances.sewing_machine -- janome -- 29365\n");
+				printf("Exemplo: construction.tools.welding -- magnetta -- 25478\n");
+				printf("Digite o category_code do produto:\n");
+				if(fgets(category_code_aux, 64, stdin))
+					category_code_aux[strcspn(category_code_aux, "\n")] = 0;
+				printf("Digite a marca do produto:\n");
+				if(fgets(brand_aux, 64, stdin))
+					brand_aux[strcspn(brand_aux, "\n")] = 0;
+				printf("Digite o preço do produto em centavos:\n");
+				scanf("%llu%*c", &price_aux);
+				start_time = get_time();
+				for(int i=0; i<2; i++){
+					timestamp_inicio = -1;
+					sucesso = -1;
+					skip = 0;
+					hash_aux = hash_produto(category_code_aux, brand_aux, price_aux);
+					if(i)
+						printf("* Hash gerado: %llu *\n", hash_aux);
+					while(sucesso != 0){
+						timestamp_inicio = procurar_hash(tabela_hash_produtos, hash_aux, skip, i, &entrada_hash_remover);
+						if(timestamp_inicio == -1) break;
+						sucesso = mostrar_acessos_produtos_intervalo_hash(category_code_aux, brand_aux, price_aux, timestamp_inicio, timestamp_inicio, i);
+						skip += 1;
+					}
+				}
+				if(sucesso == -1 || sucesso == 1){
+					printf("Não encontrado.");
+				} else {
+					end_time = get_time();
+					printf("* %lf segundos para remover o produto da tabela hash.\n", end_time-start_time);
+					entrada_hash_remover->removed = 1;
+				}
 				break;
 			default:
 				if(entrada[0] == 'X' || entrada[0] == 'x'){
@@ -272,5 +374,3 @@ int main(){
 	return 0;
 }
 
-
-//testar_linhas_produto("arquivo_produtos.bin");k

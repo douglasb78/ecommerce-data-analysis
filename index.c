@@ -416,7 +416,7 @@ void mostrar_acessos_arquivo_intervalo(long long int timestamp_start, long long 
 		fread(registro_acesso_aux, 1, sizeof(struct registro_indice_acesso), file_indice_access);
 		//printf("teste: %lld - %llu (%llu - %llu - %llu)\n", timestamp_start, registro_acesso_aux->event_timestamp, low, mid, high);
 		if(low == mid && registro_acesso_aux->event_timestamp != timestamp_start){
-			printf("Não encontrou.");
+			printf("Não encontrou o timestamp inicial.");
 			return;
 		}
 		if(timestamp_start > registro_acesso_aux->event_timestamp){
@@ -463,6 +463,113 @@ void mostrar_acessos_arquivo_intervalo(long long int timestamp_start, long long 
 	fclose(file_indice_access);
 	return;
 }
+
+int mostrar_acessos_produtos_intervalo_hash(char category_code_aux[64], char brand_aux[64], unsigned long long int price_aux,
+										long long int timestamp_start, long long int timestamp_end, int mostrar
+){
+    unsigned long long int low = 0, mid = 0, high = 0;
+    int flag = 1;
+	
+    // Abrir arquivo de índice
+    FILE *file_indice_access = fopen("indice_acessos.bin", "rb");
+    if(file_indice_access == NULL){
+        printf("Erro ao ler o índice binário de acessos. \"mostrar_acessos_produtos_intervalo()\"\nCertifique-se dele ter sido criado!");
+        return -1;
+    }
+    
+    // Abrir o arquivo binário de acessos
+    FILE *file_access = fopen("arquivo_acessos.bin", "rb");
+    if(file_access == NULL){
+        printf("Erro ao ler o arquivo binário de acessos. \"mostrar_acessos_produtos_intervalo()\"\nCertifique-se dele ter sido criado!");
+        return -1;
+    }
+
+    RegistroIndiceAcesso *registro_acesso_aux = (RegistroIndiceAcesso*)malloc(sizeof(struct registro_indice_acesso));
+    LineAccess *linha_acesso_aux = (LineAccess*)malloc(sizeof(struct line_access));
+
+    fseek(file_indice_access, 0, SEEK_END);
+    high = (ftell(file_indice_access) - sizeof(struct header_indice)) / sizeof(struct registro_indice_acesso);
+
+    // Buscar o timestamp de início no índice
+    while(timestamp_start != registro_acesso_aux->event_timestamp) {
+        mid = low + (high - low) / 2;
+        fseek(file_indice_access, sizeof(struct header_indice) + mid * sizeof(struct registro_indice_acesso), SEEK_SET);
+        fread(registro_acesso_aux, 1, sizeof(struct registro_indice_acesso), file_indice_access);
+		//printf("teste: %lld - %llu (%llu - %llu - %llu)\n", timestamp_start, registro_acesso_aux->event_timestamp, low, mid, high);
+
+        if(low == mid && registro_acesso_aux->event_timestamp != timestamp_start){
+            printf("Não encontrou o timestamp inicial.\n");
+            return 1;
+        }
+
+        if(timestamp_start > registro_acesso_aux->event_timestamp) {
+            low = mid;
+        } else {
+            high = mid;
+        }
+    }
+
+    // Buscar os acessos até o timestamp final
+    while(registro_acesso_aux->event_timestamp <= timestamp_end) {
+        fseek(file_indice_access, sizeof(struct header_indice) + mid * sizeof(struct registro_indice_acesso), SEEK_SET);
+        fread(registro_acesso_aux, 1, sizeof(struct registro_indice_acesso), file_indice_access);
+
+        if(registro_acesso_aux->event_timestamp > timestamp_end) break;
+
+        //printf("[Índice] timestamp: %lld - índice: %llu\n", registro_acesso_aux->event_timestamp, registro_acesso_aux->indice);
+        fseek(file_access, sizeof(struct line_access) * registro_acesso_aux->indice, SEEK_SET);
+        fread(linha_acesso_aux, sizeof(struct line_access), 1, file_access);
+
+        // Verificar se o produto correspondente ao acesso se encaixa no category_code, brand, e price
+        LineProduct *linha_produto = encontrar_produto_arquivo("indice_produtos.bin", linha_acesso_aux->product_id);
+        if(linha_produto != NULL) {
+            if (strcmp(linha_produto->category_code, category_code_aux) == 0 && 
+                strcmp(linha_produto->brand, brand_aux) == 0 && 
+                linha_produto->price == price_aux
+			) {
+				flag = 0;
+                // Produto encontrado
+                if(mostrar){
+	                printf("[Arquivo binário de acessos]\n");
+	                printf("\ttimestamp: %lld\n\tindice: %llu\n\tuser_id: %lu\n\tevent_type: %s\n\tproduct_id: %lu\n\tuser_session: %s\n\tremoved: %d\n",
+	                    linha_acesso_aux->event_timestamp,
+	                    linha_acesso_aux->indice,
+	                    linha_acesso_aux->user_id,
+	                    linha_acesso_aux->event_type,
+	                    linha_acesso_aux->product_id,
+	                    linha_acesso_aux->user_session,
+	                    linha_acesso_aux->removed
+	                );
+	
+	                printf("\t[Arquivo binário de produtos]\n");
+	                printf("\t\tproduct_id: %llu\n\t\tindice: %llu\n\t\tcategory_id: %llu\n\t\tcategory_code: %s\n\t\tbrand: %s\n\t\tprice: %Lf\n\t\tremoved: %d\n",
+	                    linha_produto->product_id,
+	                    linha_produto->indice,
+	                    linha_produto->category_id,
+	                    linha_produto->category_code,
+	                    linha_produto->brand,
+	                    ((double)linha_produto->price) / 100.0,
+	                    linha_produto->removed
+	                );
+	                printf("\n");
+				}
+                fclose(file_access);
+			    fclose(file_indice_access);
+			    free(registro_acesso_aux);
+			    free(linha_acesso_aux);
+			    return flag;
+            }
+        }
+        mid++;
+    }
+
+    fclose(file_access);
+    fclose(file_indice_access);
+    free(registro_acesso_aux);
+    free(linha_acesso_aux);
+	return flag;
+}
+
 
 /* =======================================================
 	Mostrar marcas mais compradas:

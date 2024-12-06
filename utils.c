@@ -125,7 +125,7 @@ long long int generate_timestamp(char date_string[]){
 // Função de hashing que encontrei com boa distribuição e efeito avalanche:
 // hash: https://www.programmingalgorithms.com/algorithm/sdbm-hash/c/
 // hash: https://theartincode.stanis.me/008-djb2/
-unsigned int HashSDBM(char* str, unsigned int length) {
+unsigned int hashSDBM(char* str, unsigned int length) {
 	unsigned int hash = 0;
 	unsigned int i = 0;
 

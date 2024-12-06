@@ -39,6 +39,9 @@ void mostrar_indice_acessos(RegistroIndiceAcesso *indice, unsigned long long int
 void mostrar_indice_produtos(RegistroIndiceProduto *indice, unsigned long long int registros);
 
 void mostrar_acessos_arquivo_intervalo(long long int timestamp_start, long long int timestamp_end);
+int mostrar_acessos_produtos_intervalo_hash(char category_code_aux[64], char brand_aux[64], unsigned long long int price_aux,
+										long long int timestamp_start, long long int timestamp_end, int mostrar
+);
 
 void mostrar_marcas_mais_compradas();
 

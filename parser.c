@@ -137,7 +137,7 @@ unsigned long long int write_data_to_binary_files(char filename[], int count){
 	int aux = 0;
 	unsigned long long int indice = 0;
 	char char_aux = '\0';
-	char string_aux[256];
+	char string_aux[512];
 	memset(string_aux, '\0', sizeof(string_aux));
 	FILE *file_data = fopen(filename, "r");
 	if(file_data == NULL){
