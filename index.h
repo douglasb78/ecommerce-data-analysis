@@ -9,11 +9,13 @@ typedef struct header_indice {
 typedef struct registro_indice_produto {
 	unsigned long int product_id;
 	unsigned long long int indice;
+	int removed;
 } RegistroIndiceProduto;
 
 typedef struct registro_indice_acesso {
 	long long int event_timestamp;
 	unsigned long long int indice;
+	int removed;
 } RegistroIndiceAcesso;
 
 typedef struct registro_marcas {
@@ -39,4 +41,6 @@ void mostrar_indice_produtos(RegistroIndiceProduto *indice, unsigned long long i
 void mostrar_acessos_arquivo_intervalo(long long int timestamp_start, long long int timestamp_end);
 
 void mostrar_marcas_mais_compradas();
+
+LineProduct* encontrar_produto_arquivo(char filename[], unsigned long int product_id);
 #endif

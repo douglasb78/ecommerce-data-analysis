@@ -281,6 +281,7 @@ RegistroIndiceAcesso* criar_indice_acessos(char filename[], unsigned long long i
 	RegistroIndiceAcesso *indice = (RegistroIndiceAcesso*)calloc(registros*2+1, (long)sizeof(struct registro_indice_acesso));
 	for(unsigned long long int i=0; i<registros; i++){
 		indice[i].indice = -1;
+		indice[i].removed = 0;
 	}
 	
 	fseek(file_access, 0, SEEK_SET);
@@ -317,6 +318,7 @@ RegistroIndiceProduto* criar_indice_produtos(char filename[], unsigned long long
 	RegistroIndiceProduto *indice = (RegistroIndiceProduto*)calloc(registros*2+1, (long)sizeof(struct registro_indice_produto));
 	for(unsigned long long int i=0; i<registros; i++){
 		indice[i].indice = -1;
+		indice[i].removed = 0;
 	}
 	
 	fseek(file_products, 0, SEEK_SET);

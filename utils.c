@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <windows.h>
 #include "utils.h"
 
 // o timestamp é usado de chave no índice de acessos.
@@ -120,3 +121,26 @@ long long int generate_timestamp(char date_string[]){
 
 	return ts;
 }
+
+// Função de hashing que encontrei com boa distribuição e efeito avalanche:
+// hash: https://www.programmingalgorithms.com/algorithm/sdbm-hash/c/
+// hash: https://theartincode.stanis.me/008-djb2/
+unsigned int HashSDBM(char* str, unsigned int length) {
+	unsigned int hash = 0;
+	unsigned int i = 0;
+
+	for (i = 0; i < length; str++, i++)
+	{
+		hash = (*str) + (hash << 6) + (hash << 16) - hash;
+	}
+
+	return hash;
+}
+
+double get_time() {
+    LARGE_INTEGER t, f;
+    QueryPerformanceCounter(&t);
+    QueryPerformanceFrequency(&f);
+    return (double)t.QuadPart/(double)f.QuadPart;
+}
+
