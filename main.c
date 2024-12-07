@@ -46,6 +46,8 @@ int main(){
 	unsigned int hash_aux = 0;
 	int sucesso = -1;
 	int skip;
+	unsigned long long int limiar = 0;
+	unsigned long long int indice_aux;
 	struct entrada_tabela_produtos *entrada_hash_remover = NULL;
 
 	do {
@@ -59,12 +61,12 @@ int main(){
         printf(" 5. Mostrar índice de acessos.\n");
         printf(" 6. Mostrar acessos em um dado intervalo de tempo.\n");
         printf(" 7. Mostrar marcas mais vendidas.\n");
-        printf(" 8. Testar arquivos binário de produto.s\n");
+        printf(" 8. Testar arquivos binário de produtos.\n"); // 67501978
         printf(" 9. Remover produto.\n");
         printf("----------------------------------------\n");
         printf("== Trabalho 2 ==\n");
         printf("Opções Árvore B:\n");
-        printf(" 10. Construir índice de produtos na memória, com árvore B.\n");
+        printf("10. Construir índice de produtos na memória, com árvore B.\n");
         printf("11. Procurar produto pelo índice.\n");
         printf("12. Remover produto do índice árvore B.\n");
         printf("13. Criar um produto e adicioná-lo ao arquivo binário de dados da árvore B.\n");
@@ -175,14 +177,41 @@ int main(){
 				mostrar_marcas_mais_compradas();
 				break;
 			case 8:
-				testar_linhas_produto();
+				printf("Digite o índice para as linhas serem exibidas: ");
+				scanf("%llu", &limiar);
+				testar_linhas_produto(limiar);
 				break;
 			case 9:
+				indice_aux = 0;
+				line_product_aux =	(LineProduct*)malloc(sizeof(struct line_product));
 				printf("Digite o product_id para remover do arquivo de dados:\t(Exemplo: 1004856)\n"); // 1004856
 				scanf("%lu", &product_id_busca);
+				FILE *file_ptr = fopen("arquivo_produtos.bin", "rb+");
+				if(file_ptr == NULL){
+					printf("Erro ao abrir o arquivo binário de produtos. Certifique-se dele ter sido gerado!\n");
+					break;
+				}
+				start_time = get_time();
+				fseek(file_ptr, 0, SEEK_SET);
+				while(fread(line_product_aux, (long)sizeof(struct line_product), 1, file_ptr)){
+					printf("%s\n", line_product_aux->category_code);
+					if(line_product_aux->product_id == product_id_busca) break;
+				}
+				indice_aux = line_product_aux->indice;
+				line_product_aux->removed = 1;
+				fwrite(line_product_aux, (long)sizeof(struct line_product), 1, file_ptr);
+				end_time = get_time();
+				fseek(file_ptr, (long)sizeof(struct line_product)*indice_aux, SEEK_SET);
+				fread(line_product_aux, (long)sizeof(struct line_product), 1, file_ptr);
+				//printf("%lu %d\n", line_product_aux->product_id, line_product_aux->removed);
+				printf("* %lf segundos para remover o produto do arquivo binário.\n", end_time-start_time);
+				fclose(file_ptr);
 				break;
 			case 10:
+				start_time = get_time();
 				bt_produtos = criar_indice_produtos_arvore_b("arquivo_produtos.bin", &registros_produtos_b);
+				end_time = get_time();
+				printf("* %lf segundos para criar o índice de produtos árvore B na memória.\n", end_time-start_time);
 				//mostrar_arvore(bt_produtos, 0, NULL);
 				break;
 			case 11:

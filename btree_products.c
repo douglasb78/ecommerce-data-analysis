@@ -199,8 +199,11 @@ BTree_Prod criar_indice_produtos_arvore_b(char filename[], unsigned long long in
 	}
 	// Contar número de produtos:
 	LineProduct *line_product_aux = (LineProduct*)malloc(sizeof(struct line_product));
-	fseek(file_products, (long)sizeof(struct line_product) * -1, SEEK_END);
-	fread(line_product_aux, (long)sizeof(struct line_product), 1, file_products);
+	//fseek(file_products, (long)sizeof(struct line_product) * -1, SEEK_END);
+	//fread(line_product_aux, (long)sizeof(struct line_product), 1, file_products);
+	while(fread(line_product_aux, (long)sizeof(struct line_product), 1, file_products)){
+		;
+	}
 	registros = line_product_aux->indice + 1; // Tem '+1'porque o índice começa em 0 (zero)
 	printf("Criando índice...\n");
 	printf("Há %llu registros no arquivo binário de produtos.\n", registros);

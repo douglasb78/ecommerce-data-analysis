@@ -29,8 +29,8 @@ void print_data(LineData *data){
 // 80.000 = 2019-11-01 03:29:46 UTC,view,4700727,2053013560899928785,auto.accessories.videoregister,navitel,51.46,543578026,9eb059dc-3fdc-467f-a723-af6330893212
 
 // criar versões menores do arquivo, para fins de teste do programa:
-// powershell Get-Content 2019-Nov.csv -Head 100000 | Set-Content 2019-Nov-small.csv
-// powershell Get-Content 2019-Oct.csv -Head 100000 | Set-Content 2019-Oct-small.csv
+// powershell Get-Content 2019-Nov.csv -Head 10000 | Set-Content 2019-Nov-small.csv
+// powershell Get-Content 2019-Oct.csv -Head 10000 | Set-Content 2019-Oct-small.csv
 
 // converter carriage return
 // $FilePath = "C:\Test\File.txt"
@@ -155,9 +155,13 @@ unsigned long long int write_data_to_binary_files(char filename[], int count){
 		}
 	} else {
 		LineProduct *line_product_aux = (LineProduct*)malloc(sizeof(struct line_product));
-		fseek(file_products, (long)sizeof(struct line_product) * -1, SEEK_END);
-		fread(line_product_aux, (long)sizeof(struct line_product), 1, file_products);
-		indice = line_product_aux->indice + 2;
+		//fseek(file_products, (long)sizeof(struct line_product) * -1L, SEEK_END);
+		//fread(line_product_aux, (long)sizeof(struct line_product), 1L, file_products);
+		//indice = line_product_aux->indice + 2L;
+		while(fread(line_product_aux, (long)sizeof(struct line_product), 1, file_products)){
+			;
+		}
+		indice = line_product_aux->indice + 1L;
 		free(line_product_aux);
 		printf("Acrescentando ao arquivo binário de produtos...\n");
 		fseek(file_products, 0, SEEK_END);
@@ -218,14 +222,16 @@ unsigned long long int write_data_to_binary_files(char filename[], int count){
 	}
 	fclose(file_products);
 	fclose(file_access);
+	fclose(file_data);
 	return indice;
 }
 
-void testar_linhas_produto(){
+void testar_linhas_produto(unsigned long long int limiar){
 	FILE *file_products = fopen("arquivo_produtos.bin", "rb");
 	LineProduct *line = (LineProduct*)malloc(sizeof(struct line_product));
 	while(fread(line, (long)sizeof(struct line_product), 1, file_products)){
-		printf("%lu %llu %llu %s %s %llu\n", line->product_id, line->indice, line->category_id, line->category_code, line->brand, line->price);
+		if(line->indice > limiar)
+			printf("%lu %llu %llu %s %s %llu\n", line->product_id, line->indice, line->category_id, line->category_code, line->brand, line->price);
 	}
 	fclose(file_products);
 	return;

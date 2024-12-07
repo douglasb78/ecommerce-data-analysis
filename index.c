@@ -271,8 +271,11 @@ RegistroIndiceAcesso* criar_indice_acessos(char filename[], unsigned long long i
 	}
 	// Contar número de acessos:
 	LineAccess *line_access_aux = (LineAccess*)malloc(sizeof(struct line_access));
-	fseek(file_access, (long)sizeof(struct line_access) * -1, SEEK_END);
-	fread(line_access_aux, (long)sizeof(struct line_access), 1, file_access);
+	//fseek(file_access, (long)sizeof(struct line_access) * -1, SEEK_END);
+	//fread(line_access_aux, (long)sizeof(struct line_access), 1, file_access);
+	while(fread(line_access_aux, (long)sizeof(struct line_access), 1, file_access)){
+		;
+	}
 	registros = line_access_aux->indice + 1; // Tem '+1'porque o índice começa em 0 (zero)
 	printf("Criando índice...\n");
 	printf("Há %llu registros no arquivo binário de acessos.\n", registros);
@@ -288,7 +291,7 @@ RegistroIndiceAcesso* criar_indice_acessos(char filename[], unsigned long long i
 	
 	printf("Realizando inserção ordenada no índice...\n");
 	while(fread(line_access_aux, (long)sizeof(struct line_access), 1, file_access)){
-		if(line_access->removed == 0){
+		if(line_access_aux->removed == 0){
 			insercao_ordenada_acessos(indice, line_access_aux->event_timestamp, line_access_aux->indice, registros);
 			i++;	
 		}
@@ -310,9 +313,13 @@ RegistroIndiceProduto* criar_indice_produtos(char filename[], unsigned long long
 	}
 	// Contar número de produtos:
 	LineProduct *line_product_aux = (LineProduct*)malloc(sizeof(struct line_product));
-	fseek(file_products, (long)sizeof(struct line_product) * -1, SEEK_END);
-	fread(line_product_aux, (long)sizeof(struct line_product), 1, file_products);
+	//fseek(file_products, (long)sizeof(struct line_product) * -1, SEEK_END);
+	//fread(line_product_aux, (long)sizeof(struct line_product), 1, file_products);
+	while(fread(line_product_aux, (long)sizeof(struct line_product), 1, file_products)){
+		;
+	}
 	registros = line_product_aux->indice + 1; // Tem '+1'porque o índice começa em 0 (zero)
+	//printf("%llu\n", line_product_aux->product_id);
 	printf("Criando índice...\n");
 	printf("Há %llu registros no arquivo binário de produtos.\n", registros);
 	
@@ -327,7 +334,7 @@ RegistroIndiceProduto* criar_indice_produtos(char filename[], unsigned long long
 	
 	printf("Realizando inserção ordenada no índice...\n");
 	while(fread(line_product_aux, (long)sizeof(struct line_product), 1, file_products)){
-		if(line_product->removed == 0){
+		if(line_product_aux->removed == 0){
 			insercao_ordenada_produtos(indice, line_product_aux->product_id, line_product_aux->indice, registros);
 			i++;
 		}
